@@ -5,6 +5,7 @@
  */
 package exsql;
 
+import java.sql.SQLException;
 import java.util.UUID;
 import javax.swing.JOptionPane;
 
@@ -17,13 +18,14 @@ public class ExSql {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
  String ruta = JOptionPane.showInputDialog("Introduce la ruta de la base de datos");
         InterfaceSQLite bd = new InterfaceSQLite(ruta);
         Boolean seguir = true;
 
         if (bd.connect()) {
             System.out.println("Conectado");
+            bd.crearTb();
             String option = JOptionPane.showInputDialog("Seleccione un opcion: "
                     + "\n a. Insertar"
                     + "\n b. Borrar"

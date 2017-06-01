@@ -10,6 +10,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import org.sqlite.*;
 
 /**
@@ -27,9 +28,11 @@ public class InterfaceSQLite {
     public InterfaceSQLite(String url) {
         this.url = "jdbc:sqlite:" + url;
     }
-/**
- * Metodo para conectarse a la base de datos con la url dada en el constructor
- */
+
+    /**
+     * Metodo para conectarse a la base de datos con la url dada en el
+     * constructor
+     */
     public Boolean connect() {
         try {
             conn = DriverManager.getConnection(url);
@@ -38,17 +41,35 @@ public class InterfaceSQLite {
             return false;
         }
     }
-/**
- * Recibe los parametros que vamos a insertar en la base de datos, devuelve el numero de insercciones correctas
- * @param id
- * @param nombre
- * @param puntos
- * @return 
- */
+    /**
+     * Crea la tabla en la base de datos
+     * @throws SQLException 
+     */
+    public void crearTb() throws SQLException {
+        Statement st = conn.createStatement();
+        try {
+            st.execute("CREATE TABLE puntos (id String primary key, name String, score String);");
+            System.out.println("Table created");
+            //st.execute("DROP TABLE ScoreTB;");
+            //System.out.println("Table deleted");
+        } catch (SQLException ex) {
+            System.err.println("Tabla ya creada");
+        }
+    }
+
+    /**
+     * Recibe los parametros que vamos a insertar en la base de datos, devuelve
+     * el numero de insercciones correctas
+     *
+     * @param id
+     * @param nombre
+     * @param puntos
+     * @return
+     */
     public int insertar(String id, String nombre, int puntos) {
         int cont = 0;
         try {
-            PreparedStatement st = conn.prepareStatement("insert into productos (id,nombre, puntos) values (?,?,?)");
+            PreparedStatement st = conn.prepareStatement("insert into puntos (id,nombre, puntos) values (?,?,?)");
             st.setString(1, id);
             st.setString(2, nombre);
             st.setInt(3, puntos);
@@ -59,17 +80,21 @@ public class InterfaceSQLite {
             return cont;
         }
     }
-/**
- * Recibe un id del elemento que se va actualizar y el nuevo valor por cada parametro en la base de datos, devuelve el numero de actualizaciones correctas
- * @param id
- * @param puntos
- * @param nombreNuevo
- * @return 
- */
+
+    /**
+     * Recibe un id del elemento que se va actualizar y el nuevo valor por cada
+     * parametro en la base de datos, devuelve el numero de actualizaciones
+     * correctas
+     *
+     * @param id
+     * @param puntos
+     * @param nombreNuevo
+     * @return
+     */
     public int update(String id, int puntos, String nombreNuevo) {
         int cont = 0;
         try {
-            String sql = "UPDATE productos SET nombre = ? , "
+            String sql = "UPDATE puntos SET nombre = ? , "
                     + "puntos = ? "
                     + "WHERE id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -83,15 +108,18 @@ public class InterfaceSQLite {
             return cont;
         }
     }
-/**
- * Recibe el id del elemento a borrar en la base de datos, devuelve el numero de eliminaciones correctas
- * @param id
- * @return 
- */
+
+    /**
+     * Recibe el id del elemento a borrar en la base de datos, devuelve el
+     * numero de eliminaciones correctas
+     *
+     * @param id
+     * @return
+     */
     public int borrar(String id) {
         int cont = 0;
         try {
-            String sql = "DELETE FROM productos WHERE id = ?";
+            String sql = "DELETE FROM puntos WHERE id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
             pstmt.executeUpdate();
@@ -100,6 +128,6 @@ public class InterfaceSQLite {
         } catch (SQLException ex) {
             return cont;
         }
-}
+    }
 
 }
